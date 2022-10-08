@@ -57,20 +57,18 @@ int main()
       // win condition is set back to false in the event of the loop restarting
       winCond = false;
       std::cout << " You won!\nPlay again? (y/n):";
-      std::cin >> retry;
-      // ends game if 'n'. anything else, the loop restarts
-      if (retry == 'n')
-      {
-        running = false;
-      }
     }
     // when win condition is false, display game over endgame text
-    else {
-      std::cout << "You've run out of guesses! The number was " << target_number << ", Game Over!\nPlay again? (y/n):";
-      std::cin >> retry;
-      if (retry == 'n'){
+    else
+    {
+      std::cout << "You've run out of guesses! The number was " << target_number
+                << ", Game Over!\nPlay again? (y/n):";
+    }
+    std::cin >> retry;
+    // ends game if 'n'. otherwise, the loop restarts
+    if (retry == 'n')
+    {
         running = false;
-      }
     }
   }
   return 0;
