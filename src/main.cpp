@@ -10,5 +10,24 @@ int main()
 {
   std::cout << "\n ** Welcome to Console Games! ** \n" << std::endl;
 
+  // assigns a random number 1-10 to target_number
+  int target_number = std::experimental::randint(1,10);
+  std::cout << "Guess the random number:";
+
+  std::cin >> guess_number;
+
+  // if the player guesses the random number
+  if (target_number == guess_number){
+    std::cout << "You guessed correct!";
+  }
+  // if the player guessed too high
+  if (target_number < guess_number){
+    std::cout << "Nope, your guess was too high.";
+  }
+  // if the player guessed too low
+  else {
+    std::cout << "Nope, your guess was too low.";
+  }
+
   return 0;
 }
