@@ -1,4 +1,5 @@
 #include <iostream>
+#include <experimental/random>
 /* PSEUDO
  * 1. Generate a random number between 1-10
  * 2. Ask the user to guess a number between 1-10
@@ -8,7 +9,8 @@
  */
 int main()
 {
-  std::cout << "\n ** Welcome to Console Games! ** \n" << std::endl;
+
+  int guess_number = 0;
 
   // assigns a random number 1-10 to target_number
   int target_number = std::experimental::randint(1,10);
