@@ -1,7 +1,8 @@
 #include <iostream>
 #include <experimental/random>
 
-int main(){
+int main()
+{
   char menu = 'a';
   std::cout << "Welcome to Console Games\nPress 'g' to play the Random Number Guessing Game\nPress 'r' to play the Rock Paper Scissors Game\n:";
   std::cin >> menu;
@@ -69,16 +70,17 @@ int main(){
     int USRtally = 0;
     int CPUtally = 0;
     std::cout << "Welcome to the Rock Paper Scissors game\nPlease select:\n'r' for Rock\n'p' for Paper\n's' for Scissors\n";
-    while(running)
+    while (running)
     {
       char USRraw = 'r';
       // DEBUG CPU CHOICE BELOW
       char CPUraw = 'r';
-      int USR = 0;
-      int CPU = std::experimental::randint(1,3);
-      std::cout << "Your Points: " << USRtally << "\nCPU's Points: " << CPUtally << "\n:";
+      int USR     = 0;
+      int CPU     = std::experimental::randint(1, 3);
+      std::cout << "Your Points: " << USRtally << "\nCPU's Points: " << CPUtally
+                << "\n:";
       std::cin >> USRraw;
-      switch(USRraw)
+      switch (USRraw)
       {
         case 'r':
           USR = 1;
@@ -90,11 +92,12 @@ int main(){
           USR = 3;
           break;
         case 'q':
+          USR = 4;
           running = false;
           break;
       }
       // DEBUG CPU CHOICE BELOW
-      switch(CPU)
+      switch (CPU)
       {
         case 1:
           CPUraw = 'r';
@@ -108,33 +111,37 @@ int main(){
       }
       if (CPU == USR)
       {
-        std::cout << "It's a tie! Neither of you got points\n";
+        std::cout << "It's a tie! Neither of you got points\nCPU Chose: "
+                  << CPUraw << "\n";
       }
       else if ((CPU - USR * 1) > 1)
       {
         if (CPU > USR)
         {
           USRtally++;
-          std::cout << "You beat the CPU\n";
+          std::cout << "You beat the CPU\nCPU Chose: " << CPUraw << "\n";
         }
         else
         {
           CPUtally++;
-          std::cout << "The CPU beat you with " << CPUraw << "\n";
+          std::cout << "The CPU beat you\nCPU Chose: " << CPUraw << "\n";
         }
       }
       else if (CPU > USR)
       {
         CPUtally++;
-        std::cout << "The CPU beat you with " << CPUraw << "\n";
+        std::cout << "The CPU beat you\nCPU Chose: " << CPUraw << "\n";
       }
-      else
+      else if (USR > CPU)
       {
         USRtally++;
-        std::cout << "You beat the CPU\n";
+        std::cout << "You beat the CPU\nCPU Chose: " << CPUraw << "\n";
+      }
+      else if (USR == 4)
+      {
+        std::cout << "You beat the CPU...for good\n";
       }
     }
-
   }
   return 0;
 }
