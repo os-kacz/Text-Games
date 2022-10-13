@@ -31,12 +31,12 @@ int main(){
           winCond = true;
         }
         // if the player guessed too high
-        if (target_number < guess_number)
+        else if (target_number < guess_number)
         {
           std::cout << "Nope, your guess was too high.\n";
         }
         // if the player guessed too low
-        if (target_number > guess_number)
+        else if (target_number > guess_number)
         {
           std::cout << "Nope, your guess was too low.\n";
         }
