@@ -1,14 +1,35 @@
 #include <iostream>
-#include <experimental/random>
+#include <ctime>
+#include <cstdlib>
+#include <fstream>
 
-int numgame()
+// TESTING FILE READING, IGNORE
+int readFile()
+{
+  std::ifstream inFile(".../RPS.txt");
+  if (inFile.is_open())
+  {
+    std::string myText;
+    inFile >> myText;
+    std::cout << myText;
+    inFile.close();
+  }
+  else
+  {
+    std::cout << "Could not read file";
+  }
+  return 0;
+}
+
+int numGame()
 {
   int guess_number = 0;
   bool winCond     = false;
   char retry       = 'y';
   // assigns a random number 1-10 to target_number
   // this is done in the while loop so a new number is generated per game instance
-  int target_number = std::experimental::randint(1, 10);
+  int target_number = std::rand() % 10 + 1;
+  std::cout << target_number;
   // sets maximum guesses which is 5, and while you have guesses it loops. every loop removes a guess
   for (int guess = 5; guess > 0; guess--)
   {
@@ -60,85 +81,89 @@ int numgame()
   }
 }
 
-int rpsgame(char USRraw)
+int rpsGame(int CPU)
 {
-    // init user's mathematical choice var for CPU's choice comparison
-    int USR = 0;
-    // generate a random number between 1 and 3
-    int CPU = std::experimental::randint(1, 3);
-    // convert alphabetical value into numerical value for maths calculations
-    switch (USRraw)
-    {
-      case 'r':
-        USR = 1;
-        break;
-      case 'p':
-        USR = 2;
-        break;
-      case 's':
-        USR = 3;
-        break;
-      case 'q':
-        USR = 4;
-        break;
-      default:
-        std::cout << "invalid input";
-        break;
-    }
-    // option to leave the game
-    if (USR == 4)
-    {
-      std::cout << "You beat the CPU...for good\n";
-      return 2;
-    }
-    // tie between user and cpu
-    else if (CPU == USR)
-    {
-      std::cout << "It's a tie! Neither of you got points\n";
-      return 0;
-    }
-    /* compares difference between inputs of CPU and USR (user). if greater
-     * than 1, it can only mean either rock or paper has been chosen */
-    else if ((CPU - USR * 1) > 1)
-    {
-      /* if CPU's choice is greater than USR, it means that CPU chose rock
-       * and USR chose paper. USR wins and gets a point*/
-      if (CPU > USR)
-      {
-        std::cout << "You beat the CPU\n";
-        return 1;
-      }
-      // otherwise, CPU chose paper and USR chose rock, CPU wins
-      else
-      {
-        std::cout << "The CPU beat you\n";
-        return -1;
-      }
-    }
-    /* now that earlier possibilities have been eliminated, the only options
-         * that could have been chosen are now either rock and paper, or paper
-         * and scissors. so from this point forward, larger number wins. so that
-         * means only either paper beats rock, or rock beats scissors*/
-    else if (CPU > USR)
-    {
-      std::cout << "The CPU beat you\n";
-      return -1;
-    }
-    else if (USR > CPU)
+  std::cout << CPU;
+  // init user's mathematical choice var for CPU's choice comparison
+  int USR = 0;
+  // convert alphabetical value into numerical value for maths calculations
+  char USRraw = 'r';
+  std::cin >> USRraw;
+  switch (USRraw)
+  {
+    case 'r':
+      USR = 1;
+      break;
+    case 'p':
+      USR = 2;
+      break;
+    case 's':
+      USR = 3;
+      break;
+    case 'q':
+      USR = 4;
+      break;
+    default:
+      std::cout << "invalid input";
+      break;
+  }
+  // option to leave the game
+  if (USR == 4)
+  {
+    std::cout << "You beat the CPU...for good\n";
+    return 2;
+  }
+  // tie between user and cpu
+  else if (CPU == USR)
+  {
+    std::cout << "It's a tie! Neither of you got points\n";
+    return 0;
+  }
+  /* compares difference between inputs of CPU and USR (user). if greater
+   * than 1, it can only mean either rock or paper has been chosen */
+  else if ((CPU - USR * 1) > 1)
+  {
+    /* if CPU's choice is greater than USR, it means that CPU chose rock
+     * and USR chose paper. USR wins and gets a point*/
+    if (CPU > USR)
     {
       std::cout << "You beat the CPU\n";
       return 1;
     }
-    // if nothing else, return 3
-    return 3;
+    // otherwise, CPU chose paper and USR chose rock, CPU wins
+    else
+    {
+      std::cout << "The CPU beat you\n";
+      return -1;
+    }
+  }
+  /* now that earlier possibilities have been eliminated, the only options
+       * that could have been chosen are now either rock and paper, or paper
+       * and scissors. so from this point forward, larger number wins. so that
+       * means only either paper beats rock, or rock beats scissors*/
+  else if (CPU > USR)
+  {
+    std::cout << "The CPU beat you\n";
+    return -1;
+  }
+  else if (USR > CPU)
+  {
+    std::cout << "You beat the CPU\n";
+    return 1;
+  }
+  // if nothing else, return 3
+  return 3;
 }
 
 int main()
 {
+  // using time_t() because time() did not generate desired random numbers
+  std::srand(std::time_t());
   bool runningMain = true;
   char menu = 'a';
   while (runningMain)
   {
+    // MAIN MENU ---------------------------------------------------------------
     bool runningInstance = true;
     std::cout << "Welcome to Console Games\nPress 'g' to play the Random Number Guessing Game\nPress 'r' to play the Rock Paper Scissors Game\nPress 'q' to quit the program\n:";
     std::cin >> menu;
@@ -151,7 +176,7 @@ int main()
       while (runningInstance)
       {
         // runs the random number game. if func returns 0, quit the game. anything else, continue
-        if (numgame() == 0)
+        if (numGame() == 0)
         {
           runningInstance = false;
         }
@@ -164,13 +189,12 @@ int main()
       // init point tallies for the game
       int USRtally = 0;
       int CPUtally = 0;
-      char usrinput = 'r';
       std::cout << "Welcome to the Rock Paper Scissors game\nPlease select:\n'r' for Rock\n'p' for Paper\n's' for Scissors\nOr 'q' for Quit\n";
       // start game loop after so points are kept
       while (runningInstance)
       {
-        std::cin >> usrinput;
-        int rpsState = rpsgame(usrinput);
+        // generate a random number between 1 and 3
+        int rpsState = rpsGame(std::rand() % 3 + 1);
         switch (rpsState)
         {
           case -1:
@@ -191,6 +215,12 @@ int main()
         }
       }
     }
+    // TESTING FILE READING, IGNORE
+    else if (menu == 'f')
+    {
+      readFile();
+    }
+
     // QUIT PROGRAM ------------------------------------------------------------
     else
     {
