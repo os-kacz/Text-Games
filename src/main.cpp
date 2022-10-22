@@ -84,13 +84,13 @@ int numGame()
   }
 }
 
-int rpsGame(int CPU, int x)
+int rpsGame(int CPU, int x, int y)
 {
   // init user's mathematical choice var for CPU's choice comparison
   int USR = 0;
   // convert alphabetical value into numerical value for maths calculations
   char USRraw = 'r';
-  std::cout << "\nDifficulty: " << x << "/20\nYour Choice:";
+  std::cout << "\nDifficulty: " << x << "/10\nYour Choice:";
   std::cin >> USRraw;
   switch (USRraw)
   {
@@ -110,10 +110,10 @@ int rpsGame(int CPU, int x)
       std::cout << "invalid input";
       break;
   }
-  int diffi = std::rand() % (20 - x) + 1;
-  if (diffi == 1)
+  int diffi = std::rand() % (11 - x) + 1;
+  if (diffi == 1 && y > 1 && USR != 4)
   {
-    std::cout << "The CPU cheated!!\n";
+    std::cout << "The CPU beat you\n";
     return -1;
   }
   else
@@ -201,7 +201,9 @@ int main()
       // init point tallies for the game
       int USRtally = 0;
       int CPUtally = 0;
-      int streak = 0;
+      // init difficulty-related factors
+      int wstreak = 0;
+      int lstreak = 0;
       std::cout << "Welcome to the Rock Paper Scissors game\nPlease select:\n'r' for Rock\n'p' for Paper\n's' for Scissors\nOr 'q' for Quit\n";
       // start game loop after so points are kept
       while (runningInstance)
@@ -209,19 +211,25 @@ int main()
         /* generate a random number between 1 and 3 and put that into the rpsGame
          * function. this runs the game, takes in the CPU's choice as a condition,
          * then will return an int value*/
-        int rpsState = rpsGame(std::rand() % 3 + 1, streak);
+        if (lstreak > 5)
+        {
+          wstreak -= std::rand() % (lstreak - 2) + 1;
+          std::cout << "Loser! Difficulty decreased\n";
+          lstreak = 0;
+        }
+        int rpsState = rpsGame(std::rand() % 3 + 1, wstreak, lstreak);
         // the returned int is put into cases to find who won during the game
         switch (rpsState)
         {
           case -1: // CPU wins, gains a point
             CPUtally++;
+            lstreak++;
             break;
           case 0: // no one wins, it's a tie. no points are awarded
             break;
-            streak++;
           case 1: // user wins, gains a point
             USRtally++;
-            streak++;
+            wstreak++;
             break;
           case 2: // user quits the game. outputs score then breaks loop
             std::cout << "The final scores are:\nYou: " << USRtally << "\nCPU: " << CPUtally << std::endl;
