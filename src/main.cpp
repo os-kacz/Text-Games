@@ -6,12 +6,15 @@
 // TESTING FILE READING, IGNORE
 int readFile()
 {
-  std::ifstream inFile(".../RPS.txt");
+  std::ifstream inFile("C://Users//semis//OneDrive - UWE Bristol//cplusplus//console-games-22-23-os-kacz/RPS.txt");
   if (inFile.is_open())
   {
-    std::string myText;
-    inFile >> myText;
-    std::cout << myText;
+    int choice[10];
+    for (int & j : choice)
+    {
+      inFile >> j;
+      std::cout << j << std::endl;
+    }
     inFile.close();
   }
   else
@@ -81,13 +84,13 @@ int numGame()
   }
 }
 
-int rpsGame(int CPU)
+int rpsGame(int CPU, int x)
 {
-  std::cout << CPU;
   // init user's mathematical choice var for CPU's choice comparison
   int USR = 0;
   // convert alphabetical value into numerical value for maths calculations
   char USRraw = 'r';
+  std::cout << "\nDifficulty: " << x << "/20\nYour Choice:";
   std::cin >> USRraw;
   switch (USRraw)
   {
@@ -107,52 +110,61 @@ int rpsGame(int CPU)
       std::cout << "invalid input";
       break;
   }
-  // option to leave the game
-  if (USR == 4)
+  int diffi = std::rand() % (20 - x) + 1;
+  if (diffi == 1)
   {
-    std::cout << "You beat the CPU...for good\n";
-    return 2;
+    std::cout << "The CPU cheated!!\n";
+    return -1;
   }
-  // tie between user and cpu
-  else if (CPU == USR)
+  else
   {
-    std::cout << "It's a tie! Neither of you got points\n";
-    return 0;
-  }
-  /* compares difference between inputs of CPU and USR (user). if greater
-   * than 1, it can only mean either rock or paper has been chosen */
-  else if ((CPU - USR * 1) > 1)
-  {
-    /* if CPU's choice is greater than USR, it means that CPU chose rock
-     * and USR chose paper. USR wins and gets a point*/
-    if (CPU > USR)
+    // option to leave the game
+    if (USR == 4)
     {
-      std::cout << "You beat the CPU\n";
-      return 1;
+      std::cout << "You beat the CPU...for good\n";
+      return 2;
     }
-    // otherwise, CPU chose paper and USR chose rock, CPU wins
-    else
+    // tie between user and cpu
+    else if (CPU == USR)
+    {
+      std::cout << "It's a tie! Neither of you got points\n";
+      return 0;
+    }
+    /* compares difference between inputs of CPU and USR (user). if greater
+   * than 1, it can only mean either rock or paper has been chosen */
+    else if ((CPU - USR * 1) > 1)
+    {
+      /* if CPU's choice is greater than USR, it means that CPU chose rock
+     * and USR chose paper. USR wins and gets a point*/
+      if (CPU > USR)
+      {
+        std::cout << "You beat the CPU\n";
+        return 1;
+      }
+      // otherwise, CPU chose paper and USR chose rock, CPU wins
+      else
+      {
+        std::cout << "The CPU beat you\n";
+        return -1;
+      }
+    }
+    /* now that earlier possibilities have been eliminated, the only options
+       * that could have been chosen are now either rock and paper, or paper
+       * and scissors. so from this point forward, larger number wins. so that
+       * means only either paper beats rock, or rock beats scissors*/
+    else if (CPU > USR)
     {
       std::cout << "The CPU beat you\n";
       return -1;
     }
+    else if (USR > CPU)
+    {
+      std::cout << "You beat the CPU\n";
+      return 1;
+    }
+    // if nothing else, return 3
+    return 3;
   }
-  /* now that earlier possibilities have been eliminated, the only options
-       * that could have been chosen are now either rock and paper, or paper
-       * and scissors. so from this point forward, larger number wins. so that
-       * means only either paper beats rock, or rock beats scissors*/
-  else if (CPU > USR)
-  {
-    std::cout << "The CPU beat you\n";
-    return -1;
-  }
-  else if (USR > CPU)
-  {
-    std::cout << "You beat the CPU\n";
-    return 1;
-  }
-  // if nothing else, return 3
-  return 3;
 }
 
 int main()
@@ -189,23 +201,29 @@ int main()
       // init point tallies for the game
       int USRtally = 0;
       int CPUtally = 0;
+      int streak = 0;
       std::cout << "Welcome to the Rock Paper Scissors game\nPlease select:\n'r' for Rock\n'p' for Paper\n's' for Scissors\nOr 'q' for Quit\n";
       // start game loop after so points are kept
       while (runningInstance)
       {
-        // generate a random number between 1 and 3
-        int rpsState = rpsGame(std::rand() % 3 + 1);
+        /* generate a random number between 1 and 3 and put that into the rpsGame
+         * function. this runs the game, takes in the CPU's choice as a condition,
+         * then will return an int value*/
+        int rpsState = rpsGame(std::rand() % 3 + 1, streak);
+        // the returned int is put into cases to find who won during the game
         switch (rpsState)
         {
-          case -1:
-            CPUtally += 1;
+          case -1: // CPU wins, gains a point
+            CPUtally++;
             break;
-          case 0:
+          case 0: // no one wins, it's a tie. no points are awarded
             break;
-          case 1:
-            USRtally += 1;
+            streak++;
+          case 1: // user wins, gains a point
+            USRtally++;
+            streak++;
             break;
-          case 2:
+          case 2: // user quits the game. outputs score then breaks loop
             std::cout << "The final scores are:\nYou: " << USRtally << "\nCPU: " << CPUtally << std::endl;
             runningInstance = false;
             break;
