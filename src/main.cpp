@@ -36,7 +36,6 @@ int numGame()
   // assigns a random number 1-10 to target_number
   // this is done in the while loop so a new number is generated per game instance
   int target_number = std::rand() % 10 + 1;
-  std::cout << target_number;
   // sets maximum guesses which is 5, and while you have guesses it loops. every loop removes a guess
   for (int guess = 5; guess > 0; guess--)
   {
