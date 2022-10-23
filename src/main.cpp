@@ -3,6 +3,10 @@
 #include <cstdlib>
 #include <fstream>
 
+// init global vars so values can be kept outside function loop
+char choiceHistory[3];
+int choiceIter = -1;
+
 // TESTING FILE READING, IGNORE
 int readFile()
 {
@@ -104,47 +108,66 @@ int rpsGame(int CPU, int x, int y)
       USR = 3;
       break;
     case 'q':
-      USR = 4;
+      USR = 5;
       break;
     default:
       std::cout << "invalid input";
       break;
   }
-  int diffi = std::rand() % (11 - x) + 1;
-  if (diffi == 1 && y > 1 && USR != 4)
+  // keeps choice iteration between 0 and 2
+  choiceIter++;
+  if (choiceIter > 2)
   {
-    std::cout << "The CPU beat you\n";
+    choiceIter = 0;
+  }
+  // assign user choice to respective position in choice history
+  choiceHistory[choiceIter] = USRraw;
+  /* for every time the player wins, there is an incremental increase of 10% to
+   * the chance of the cpu deciding to beat the player regardless of input.
+   * a random number is generated from how many times the player won - 10 to get
+   * the 10% chance. e.g. if they player has won 10 times, there is a 100% chance*/
+  int diffi = std::rand() % (11 - x) + 1;
+  // if it hits the chance, and the difficulty is more than 0, and if the user hasn't selected quit
+  if (diffi == 1 && y > 0 && USR != 5)
+  {
+    std::cout << "The CPU beat you!\n";
+    return -1;
+  }
+  // if the last 3 choices are the same, beat the player
+  else if (choiceHistory[0] == choiceHistory[1] && choiceHistory[1] == choiceHistory[2])
+  {
+    std::cout << "The CPU beat you?\n";
     return -1;
   }
   else
   {
     // option to leave the game
-    if (USR == 4)
+    if (USR == 5)
     {
-      std::cout << "You beat the CPU...for good\n";
+      std::cout << "You beat the CPU...for good.\n";
       return 2;
     }
     // tie between user and cpu
     else if (CPU == USR)
     {
-      std::cout << "It's a tie! Neither of you got points\n";
+      std::cout << "It's a tie! Neither of you got points.\n";
       return 0;
     }
     /* compares difference between inputs of CPU and USR (user). if greater
-   * than 1, it can only mean either rock or paper has been chosen */
+    * than 1, it can only mean either rock or paper has been chosen */
     else if ((CPU - USR * 1) > 1)
     {
       /* if CPU's choice is greater than USR, it means that CPU chose rock
-     * and USR chose paper. USR wins and gets a point*/
+      * and USR chose paper. USR wins and gets a point*/
       if (CPU > USR)
       {
-        std::cout << "You beat the CPU\n";
+        std::cout << "You beat the CPU.\n";
         return 1;
       }
       // otherwise, CPU chose paper and USR chose rock, CPU wins
       else
       {
-        std::cout << "The CPU beat you\n";
+        std::cout << "The CPU beat you.\n";
         return -1;
       }
     }
@@ -154,12 +177,12 @@ int rpsGame(int CPU, int x, int y)
        * means only either paper beats rock, or rock beats scissors*/
     else if (CPU > USR)
     {
-      std::cout << "The CPU beat you\n";
+      std::cout << "The CPU beat you.\n";
       return -1;
     }
     else if (USR > CPU)
     {
-      std::cout << "You beat the CPU\n";
+      std::cout << "You beat the CPU.\n";
       return 1;
     }
     // if nothing else, return 3
@@ -208,26 +231,29 @@ int main()
       // start game loop after so points are kept
       while (runningInstance)
       {
-        /* generate a random number between 1 and 3 and put that into the rpsGame
-         * function. this runs the game, takes in the CPU's choice as a condition,
-         * then will return an int value*/
-        if (lstreak > 5)
+        if (lstreak > 5 || wstreak > 10)
         {
+          // reduce the win streak to reduce difficulty so player can score
           wstreak -= std::rand() % (lstreak - 2) + 1;
           std::cout << "Loser! Difficulty decreased\n";
+          // then reset lost streak as difficulty has been tweaked
           lstreak = 0;
         }
+        /* generate a random number between 1 and 3 and put that into the rpsGame
+         * function. this runs the game, takes in the CPU's choice as a condition,
+         * then will return an int value. takes in the difficulty-related vars
+         * to change how difficult the cpu is */
         int rpsState = rpsGame(std::rand() % 3 + 1, wstreak, lstreak);
         // the returned int is put into cases to find who won during the game
         switch (rpsState)
         {
-          case -1: // CPU wins, gains a point
+          case -1: // CPU wins, gains a point and contributes to decreasing difficulty
             CPUtally++;
             lstreak++;
             break;
           case 0: // no one wins, it's a tie. no points are awarded
             break;
-          case 1: // user wins, gains a point
+          case 1: // user wins, gains a point, difficulty is increased
             USRtally++;
             wstreak++;
             break;
