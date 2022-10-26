@@ -10,7 +10,7 @@ int choiceIter = -1;
 // TESTING FILE READING, IGNORE
 int readFile()
 {
-  std::ifstream inFile("C://Users//semis//OneDrive - UWE Bristol//cplusplus//console-games-22-23-os-kacz/RPS.txt");
+  std::ifstream inFile("C://Users//o2-kaczmarski//OneDrive - UWE Bristol//cplusplus//console-games-22-23-os-kacz/RPS.txt");
   if (inFile.is_open())
   {
     int choice[10];
@@ -28,19 +28,18 @@ int readFile()
   return 0;
 }
 
-int numGame()
+bool numGame()
 {
   int guess_number = 0;
-  bool winCond     = false;
-  char retry       = 'y';
+  bool winCond = false;
+  char retry = 'y';
   // assigns a random number 1-10 to target_number
   // this is done in the while loop so a new number is generated per game instance
   int target_number = std::rand() % 10 + 1;
   // sets maximum guesses which is 5, and while you have guesses it loops. every loop removes a guess
   for (int guess = 5; guess > 0; guess--)
   {
-    std::cout << "Guesses Left: " << guess
-              << "\nGuess the random number:";
+    std::cout << "Guesses Left: " << guess << "\nGuess the random number:";
     std::cin >> guess_number;
     // if the player guesses the random number
     if (target_number == guess_number)
@@ -79,11 +78,11 @@ int numGame()
   // ends game if 'n'. otherwise, the loop restarts
   if (retry == 'n')
   {
-    return 0;
+    return true;
   }
   else
   {
-    return 1;
+    return false;
   }
 }
 
@@ -113,29 +112,29 @@ int rpsGame(int CPU, int x, int y)
       std::cout << "invalid input";
       break;
   }
-  // keeps choice iteration between 0 and 2
+  // keeps rps choice iteration between 0 and 2
   choiceIter++;
   if (choiceIter > 2)
   {
     choiceIter = 0;
   }
-  // assign user choice to respective position in choice history
+  // assign user rps choice to respective position in choice history
   choiceHistory[choiceIter] = USRraw;
   /* for every time the player wins, there is an incremental increase of 10% to
    * the chance of the cpu deciding to beat the player regardless of input.
    * a random number is generated from how many times the player won - 10 to get
-   * the 10% chance. e.g. if they player has won 10 times, there is a 100% chance*/
+   * the 10% chance. e.g. if the player has won 10 times, there is a 100% chance*/
   int diffi = std::rand() % (11 - x) + 1;
   // if it hits the chance, and the difficulty is more than 0, and if the user hasn't selected quit
   if (diffi == 1 && y > 0 && USR != 5)
   {
-    std::cout << "The CPU beat you!\n";
+    std::cout << "The CPU beat you!\n"; // "!" punctuation signifies cpu cheating
     return -1;
   }
   // if the last 3 choices are the same, beat the player
   else if (choiceHistory[0] == choiceHistory[1] && choiceHistory[1] == choiceHistory[2])
   {
-    std::cout << "The CPU beat you?\n";
+    std::cout << "The CPU beat you?\n"; // "?" punctuation signifies user choosing same input 3 times
     return -1;
   }
   else
@@ -149,7 +148,7 @@ int rpsGame(int CPU, int x, int y)
     // tie between user and cpu
     else if (CPU == USR)
     {
-      std::cout << "It's a tie! Neither of you got points.\n";
+      std::cout << "It's a tie! Neither of you got points.\n"; // "." punctuation signifies regular gameplay
       return 0;
     }
     /* compares difference between inputs of CPU and USR (user). if greater
@@ -160,7 +159,7 @@ int rpsGame(int CPU, int x, int y)
       * and USR chose paper. USR wins and gets a point*/
       if (CPU > USR)
       {
-        std::cout << "You beat the CPU.\n";
+        std::cout << "You beat the CPU.";
         return 1;
       }
       // otherwise, CPU chose paper and USR chose rock, CPU wins
@@ -181,7 +180,7 @@ int rpsGame(int CPU, int x, int y)
     }
     else if (USR > CPU)
     {
-      std::cout << "You beat the CPU.\n";
+      std::cout << "You beat the CPU.";
       return 1;
     }
     // if nothing else, return 3
@@ -209,8 +208,8 @@ int main()
       // creates a loop that is broken when the player successfully guesses the random number
       while (runningInstance)
       {
-        // runs the random number game. if func returns 0, quit the game. anything else, continue
-        if (numGame() == 0)
+        // runs the random number game. if func returns true, quit the game. anything else, continue
+        if (numGame())
         {
           runningInstance = false;
         }
@@ -232,7 +231,7 @@ int main()
       {
         if (lstreak > 5 || wstreak > 10)
         {
-          // reduce the win streak to reduce difficulty so player can score
+          // reduce the win streak to reduce difficulty so player can score. decrements randomly between lstreak value minus 2 and 1.
           wstreak -= std::rand() % (lstreak - 2) + 1;
           std::cout << "Loser! Difficulty decreased\n";
           // then reset lost streak as difficulty has been tweaked
@@ -250,10 +249,19 @@ int main()
             CPUtally++;
             lstreak++;
             break;
-          case 0: // no one wins, it's a tie. no points are awarded
+          case 0: // it's a tie. no points are awarded
             break;
           case 1: // user wins, gains a point, difficulty is increased
-            USRtally++;
+            if (wstreak > 7) // if the difficulty is 8 or more, give more points
+            {
+              USRtally += wstreak - 7;
+              std::cout << " (extra points!)\n";
+            }
+            else
+            {
+              USRtally++;
+              std::cout << "\n";
+            }
             wstreak++;
             break;
           case 2: // user quits the game. outputs score then breaks loop
