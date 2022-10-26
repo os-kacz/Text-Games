@@ -252,9 +252,9 @@ int main()
           case 0: // it's a tie. no points are awarded
             break;
           case 1: // user wins, gains a point, difficulty is increased
-            if (wstreak > 7) // if the difficulty is 8 or more, give more points
+            if (wstreak > 6) // if the difficulty is 8 or more, give more points
             {
-              USRtally += wstreak - 7;
+              USRtally += wstreak - 6;
               std::cout << " (extra points!)\n";
             }
             else
